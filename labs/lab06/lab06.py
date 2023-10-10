@@ -16,6 +16,13 @@ def insert_items(lst, entry, elem):
     True
     """
     "*** YOUR CODE HERE ***"
+    i = 0
+    while i < len(lst):
+        if lst[i] == entry:
+            lst.insert(i + 1, elem)
+            i += 1
+        i += 1
+    return lst
 
 
 def naturals():
@@ -48,6 +55,8 @@ def scale(it, multiplier):
     [2, 4, 6, 8, 10]
     """
     "*** YOUR CODE HERE ***"
+    for i in it:
+        yield i * multiplier
 
 
 def hailstone(n):
@@ -65,3 +74,10 @@ def hailstone(n):
     1
     """
     "*** YOUR CODE HERE ***"
+    while n != 1:
+        yield n
+        if n % 2 == 0:
+            n //= 2
+        else:
+            n = 3 * n + 1
+    yield 1

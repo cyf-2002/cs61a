@@ -52,12 +52,14 @@ def planet(size):
     """Construct a planet of some size."""
     assert size > 0
     "*** YOUR CODE HERE ***"
+    return ['planet', size]
 
 
 def size(w):
     """Select the size of a planet."""
     assert is_planet(w), 'must call size on a planet'
     "*** YOUR CODE HERE ***"
+    return w[1]
 
 
 def is_planet(w):
@@ -118,6 +120,11 @@ def balanced(m):
     True
     """
     "*** YOUR CODE HERE ***"
+    if is_planet(m):
+        return True
+    return total_weight(end(left(m))) * length(left(m)) == \
+            total_weight(end(right(m))) * length(right(m)) and \
+                balanced(end(left(m))) and balanced(end(right(m)))
 
 
 def totals_tree(m):
@@ -150,6 +157,9 @@ def totals_tree(m):
     True
     """
     "*** YOUR CODE HERE ***"
+    if is_planet(m):
+        return tree(total_weight(m))
+    return tree(total_weight(m), [totals_tree(end(left(m))), totals_tree(end(right(m)))])
 
 
 def replace_thor_at_leaf(t, thors_replacement):
@@ -182,6 +192,9 @@ def replace_thor_at_leaf(t, thors_replacement):
     True
     """
     "*** YOUR CODE HERE ***"
+    if is_leaf(t):
+        return tree(thors_replacement) if label(t) == 'thor' else tree(label(t))
+    return tree(label(t), [replace_thor_at_leaf(i, thors_replacement) for i in branches(t)])
 
 
 def has_path(t, word):
@@ -216,6 +229,14 @@ def has_path(t, word):
     """
     assert len(word) > 0, 'no path for empty word.'
     "*** YOUR CODE HERE ***"
+    if label(t) != word[0]:
+        return False
+    elif len(word) == 1:
+        return True
+    for b in branches(t):
+        if has_path(b, word[1:]):
+            return True
+    return False 
 
 
 def preorder(t):
@@ -229,6 +250,12 @@ def preorder(t):
     [2, 4, 6]
     """
     "*** YOUR CODE HERE ***"
+    if is_leaf(t):
+        return t
+    res = []
+    for i in branches(t):
+        res += preorder(i)
+    return [label(t)] + res
 
 
 def interval(a, b):
@@ -239,12 +266,13 @@ def interval(a, b):
 def lower_bound(x):
     """Return the lower bound of interval x."""
     "*** YOUR CODE HERE ***"
+    return x[0]
 
 
 def upper_bound(x):
     """Return the upper bound of interval x."""
     "*** YOUR CODE HERE ***"
-
+    return x[1]
 
 def str_interval(x):
     """Return a string representation of interval x.
@@ -263,24 +291,29 @@ def add_interval(x, y):
 def mul_interval(x, y):
     """Return the interval that contains the product of any value in x and any
     value in y."""
-    p1 = x[0] * y[0]
-    p2 = x[0] * y[1]
-    p3 = x[1] * y[0]
-    p4 = x[1] * y[1]
-    return [min(p1, p2, p3, p4), max(p1, p2, p3, p4)]
+    p1 = lower_bound(x) * lower_bound(y)
+    p2 = lower_bound(x) * upper_bound(y)
+    p3 = upper_bound(x) * lower_bound(y)
+    p4 = upper_bound(x) * upper_bound(y)
+    return interval(min(p1, p2, p3, p4), max(p1, p2, p3, p4))
 
 
 def sub_interval(x, y):
     """Return the interval that contains the difference between any value in x
     and any value in y."""
     "*** YOUR CODE HERE ***"
-
+    s1 = lower_bound(x) - upper_bound(y)
+    s2 = lower_bound(y) - upper_bound(x)
+    s3 = upper_bound(x) - lower_bound(y)
+    s4 = upper_bound(y) - lower_bound(x)
+    return interval(min(s1, s2), max(s3, s4))
 
 def div_interval(x, y):
     """Return the interval that contains the quotient of any value in x divided by
     any value in y. Division is implemented as the multiplication of x by the
     reciprocal of y."""
     "*** YOUR CODE HERE ***"
+    assert lower_bound(y) > 0 or upper_bound(y) < 0
     reciprocal_y = interval(1 / upper_bound(y), 1 / lower_bound(y))
     return mul_interval(x, reciprocal_y)
 
