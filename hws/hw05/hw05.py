@@ -36,6 +36,39 @@ class VendingMachine:
     'Here is your soda.'
     """
     "*** YOUR CODE HERE ***"
+    stock = 0
+    balance = 0
+
+    def __init__(self, goods, price):
+        self.goods = goods
+        self.price = price
+    
+    def restock(self, amount):
+        self.stock += amount
+        return f'Current {self.goods} stock: {self.stock}'
+
+    def add_funds(self, money):
+        if self.stock == 0:
+            return f'Inventory empty. Restocking required. Here is your ${money}.'
+        else:
+            self.balance += money
+            return f'Current balance: ${self.balance}'
+
+    def vend(self):
+        if self.stock == 0:
+            return f'Inventory empty. Restocking required.'
+        else:
+            if self.balance < self.price:
+                return f'You must add ${self.price - self.balance} more funds.'
+            elif self.balance == self.price:
+                self.stock -= 1
+                self.balance = 0
+                return f'Here is your {self.goods}.'
+            else:
+                self.stock -= 1
+                change = self.balance - self.price
+                self.balance = 0
+                return f'Here is your {self.goods} and ${change} change.'
 
 
 def store_digits(n):
@@ -54,6 +87,12 @@ def store_digits(n):
     >>> print("Do not use str or reversed!") if any([r in cleaned for r in ["str", "reversed"]]) else None
     """
     "*** YOUR CODE HERE ***"
+    link = Link.empty
+    while n > 0:
+        first = n % 10
+        link = Link(first, link)
+        n //= 10
+    return link
 
 
 def path_yielder(t, value):
@@ -92,11 +131,12 @@ def path_yielder(t, value):
     """
 
     "*** YOUR CODE HERE ***"
+    if t.label == value:
+        yield [value]
+    for b in t.branches:
+        for path in path_yielder(b, value):
+            yield [t.label] + path
 
-    for _______________ in _________________:
-        for _______________ in _________________:
-
-            "*** YOUR CODE HERE ***"
 
 
 class Mint:
